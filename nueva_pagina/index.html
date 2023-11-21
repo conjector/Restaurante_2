@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva P</title>
+
+    <meta name="description" content="Página web de blog de comida">   
+
+    <link rel="preload" href="../estilos/estilo.css" as="style">
+    <link rel="stylesheet" href="../estilos/estilo.css">   
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Open+Sans&family=PT+Sans:wght@400;700&display=swap"  crossorigin="crossorigin" as="font">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <!--Header de la pagina confirmacion-->
+    <header>
+        <div class="logo centrar-texto">
+            <img src="../imagenes/logo.png" width="60" height="60" alt="">
+            <a href="titulo">
+                <h1 class="no-margin">Blog Restaurante</h1>
+            </a>
+        </div>
+
+        <!--Navbar de navegacion por las diferentes paginas-->
+        <div class="navegacion">
+            <ul>
+                <li><a href="#" id="enlace-javascript">JavaScript</a></li>
+                <li><a href="#" id="enlace-ajax">Ajax</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="contenedor-principal fondo-confirmacion">
+        <div class="seccion-javascript">
+
+            <form class="contenedor-palindromo">
+                <h4>1. Palabras palindromas</h4>
+                <input type="text" placeholder="Ingrese una palabra..." id="input-palindromo">
+                <input type="submit" id="enviar-palindromo" name="Enviar"></input>
+                <span id="resultado-palindromo"></span>
+            </form>
+            <form class="contenedor-mayor">
+                <h4>2. Detectar cual numero es el mayor</h4>
+                <input type="number" placeholder="Numero 1" name="num1" id="num1">
+                <input type="number" placeholder="Numero 2" name="num2" id="num2">
+                <input type="submit" name="Enviar" id="enviar-palindromo"></input>
+                
+                <span id="resultado-mayor"></span> 
+            </form>
+            <form class="contenedor-vocales">
+                <h4>3. Frase de forma organizada</h4>
+                <textarea name="frase" id="frase" cols="10" rows="10" placeholder="Ingrese frase..."></textarea>
+                <input type="submit" id="enviar-frase" name="Enviar">
+                <span id="resultado-vocales"></span>
+                
+            </form>
+        </div>
+
+        <div class="seccion-ajax">
+            <h2>AJAX Demo</h2>
+            <label for="input-url">URL:</label>
+            <input type="text" placeholder="Ingrese una URL..." id="input-url">
+            <button type="button" id="btn-mostrar-contenidos">Mostrar Contenidos</button>
+            <div id="estados-peticion"></div>
+            <div id="cabeceras-http"></div>
+            <div id="codigo-estado"></div>
+            <div id="zona-contenidos"></div>
+        </div>
+    </main>
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            // Por defecto, mostrar la sección de JavaScript
+            $(".seccion-ajax").hide();
+
+            // Manejar clic en el enlace de JavaScript
+            $("a#enlace-javascript").click(function (event) {
+                event.preventDefault();
+                $(".seccion-javascript").show();
+                $(".seccion-ajax").hide();
+            });
+
+            // Manejar clic en el enlace de AJAX
+            $("a#enlace-ajax").click(function (event) {
+                event.preventDefault();
+                $(".seccion-javascript").hide();
+                $(".seccion-ajax").show();
+            });
+
+            // Ejercicio 1: Palabras palíndromas
+            $(".contenedor-palindromo").submit(function (event) {
+                event.preventDefault();
+                var palabra = $("#input-palindromo").val().toLowerCase();
+                var resultado = esPalindromo(palabra);
+                $("#resultado-palindromo").text(resultado);
+            });
+
+            function esPalindromo(palabra) {
+                var reversePalabra = palabra.split("").reverse().join("");
+                return palabra === reversePalabra ? "Es un palíndromo" : "No es un palíndromo";
+            }
+
+            // Ejercicio 2: Detectar el número mayor
+            $(".contenedor-mayor").submit(function (event) {
+                event.preventDefault();
+                var num1 = parseFloat($("#num1").val());
+                var num2 = parseFloat($("#num2").val());
+                var resultado = obtenerMayor(num1, num2);
+                $("#resultado-mayor").text("El número mayor es: " + resultado);
+            });
+
+            function obtenerMayor(num1, num2) {
+                if (isNaN(num1) || isNaN(num2)) {
+                    return "Ingrese números válidos";
+                } else {
+                    return num1 > num2 ? num1 : num2;
+                }
+            }
+
+            // Ejercicio 3: Vocales en una frase
+            $(".contenedor-vocales").submit(function (event) {
+                event.preventDefault();
+                var frase = $("#frase").val().toLowerCase();
+                var resultado = obtenerVocales(frase);
+                $("#resultado-vocales").text(resultado);
+            });
+
+            function obtenerVocales(frase) {
+                var vocales = frase.match(/[aeiou]/g);
+                return vocales ? "Vocales: " + vocales.join(", ") : "No se encontraron vocales";
+            }
+
+            // Ejercicio 1: Mostrar por defecto la URL de la propia página
+            $("#input-url").val(window.location.href);
+
+            // Ejercicio 2: Descargar contenido mediante peticiones AJAX
+            $("#btn-mostrar-contenidos").click(function () {
+                var url = $("#input-url").val();
+                $("#estados-peticion").text("Cargando...");
+                $("#cabeceras-http").empty();
+                $("#codigo-estado").empty();
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    beforeSend: function () {
+                        $("#estados-peticion").text("Peticion no iniciada");
+                    },
+                    success: function (data, textStatus, xhr) {
+                        $("#estados-peticion").text("Completada");
+                        mostrarCabeceras(xhr.getAllResponseHeaders());
+                        $("#codigo-estado").text(xhr.status + " - " + xhr.statusText);
+                        $("#zona-contenidos").html(data);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        $("#estados-peticion").text("Error: " + textStatus);
+                        $("#codigo-estado").text(xhr.status + " - " + xhr.statusText);
+                        $("#zona-contenidos").empty();
+                    }
+                });
+            });
+
+            // Función para mostrar cabeceras HTTP
+            function mostrarCabeceras(cabeceras) {
+                var cabecerasArray = cabeceras.trim().split(/[\r\n]+/);
+                for (var i = 0; i < cabecerasArray.length; i++) {
+                    var header = cabecerasArray[i];
+                    var partes = header.split(': ');
+                    var nombre = partes.shift();
+                    var valor = partes.join(': ');
+                    $("#cabeceras-http").append("<div><strong>" + nombre + ":</strong> " + valor + "</div>");
+                }
+            }
+        });
+    
+    </script>
+</body>
+</html>
